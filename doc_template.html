@@ -1,0 +1,62 @@
+<!doctype html><meta charset="utf-8"><title>Promo Finder - Solution Doc</title>
+<style>
+@page{size:A4;margin:12mm 14mm}
+body{font:9.4pt/1.36 -apple-system,Helvetica,Arial,sans-serif;color:#1a1a1a;margin:0}
+h1{font-size:15pt;margin:0 0 2px} .sub{color:#555;margin:0 0 6px}
+h2{font-size:10.6pt;margin:8px 0 3px;border-bottom:1px solid #ddd;padding-bottom:1px}
+p{margin:3px 0} ul{margin:2px 0 2px 16px;padding:0} li{margin:1px 0}
+table{border-collapse:collapse;width:100%;margin:3px 0;font-size:8.6pt}
+td,th{border:1px solid #ccc;padding:2px 5px;text-align:left;vertical-align:top} th{background:#f3f3f0}
+code{font-size:8.4pt;background:#f3f3f0;padding:0 3px}
+</style>
+
+<h1>Promo Finder: finding the best promos in a microdrama screenplay</h1>
+<p class="sub">Kuku AI Generalist Assignment · Problem 1 · Prototype: Streamlit website + Python · Show: <i>I Married a Broken Soldier. He was a Duke</i> (50 episodes) · Live app: [[APP_URL]]</p>
+
+<h2>1. Why this problem</h2>
+<p>Problem 1 is Kuku's daily work: an editor watches every episode to pick promo moments, and a new show ships every week. The input pack is complete and timestamped, so every pick can be checked against the script, and a working tool saves editor hours on every show. Problem 2 is broad and hard to verify in 3 hours. Problem 3 needed field research first.</p>
+
+<h2>2. Assumptions</h2>
+<ul>
+<li>Script timestamps match the final video. An editor can only cut on <b>camera shot boundaries</b>, so every start and end is snapped to one.</li>
+<li>The audience is new viewers who land on Episode 1, so earlier episodes get a small ranking bonus (fewer spoilers, payoff is close).</li>
+<li>The hook must be <i>happening</i> in the first 3 seconds (a line or an action), not a calm establishing shot.</li>
+<li>Sexual content (Ep 49-50) is flagged and pushed to the bottom, because ad platforms reject it.</li>
+<li>A promo is mostly one continuous clip from one episode. The prompt allows joining moments, but cross-episode stitching is not built.</li>
+</ul>
+
+<h2>3. How it works</h2>
+<table>
+<tr><th>Step</th><th>Done by</th><th>What happens</th></tr>
+<tr><td>1. Parse</td><td>Code</td><td>Each screenplay becomes a list of timed lines: dialogue, action, sound, camera. No AI needed; the format is regular.</td></tr>
+<tr><td>2. Ask AI</td><td>AI model</td><td>One call per episode: "find the best 20-60s promos; give start, end, hook, cliffhanger, why, scores 1-10, spoiler?, ad-safe?" The reply is JSON.</td></tr>
+<tr><td>3. Snap</td><td>Code</td><td>Start and end move to the nearest camera cut, so the clip can be cut.</td></tr>
+<tr><td>4. Check</td><td>Code</td><td>Five rule checks: 20-60s; something happens in the first 3s; ends right after a line or action; no dialogue line cut in half; ad-safe.</td></tr>
+<tr><td>5. Rank</td><td>Code</td><td>Score = 35% hook + 35% cliffhanger + 20% standalone + 10% early-episode bonus; -1.5 if it spoils a twist, -2 per failed check, unsafe goes to the bottom.</td></tr>
+</table>
+<p><b>Model is swappable:</b> every provider is called through the same OpenAI-compatible format, so Gemini, Groq, OpenAI, Claude or Kuku's own API is just a different Base URL, model name and key in the website sidebar. <b>No key?</b> A keyword method (dramatic words at the start and end of every legal 20-60s window) runs instead, and it is also my baseline.</p>
+<p><b>Human in the loop:</b> the tool gives a ranked shortlist with the script of each clip. The editor reviews the top 10 (about 10 minutes) instead of watching ~2 hours of episodes, then cuts.</p>
+
+<h2>4. Results on the full input pack</h2>
+<div>[[AI_RESULTS]]</div>
+
+<h2>5. How I know it is good, and where it fails</h2>
+<p><b>Must-have list:</b> I read all 50 scripts and listed 20 moments any editor would use (the altar betrayal, the planted watch, the thorns, the hot iron, the cathedral explosion, ...). <code>evaluate.py</code> counts how many the tool finds. Five code checks run on every promo.</p>
+<table>
+<tr><th>Method</th><th>Must-have moments found</th><th>Top-20 promos that are must-haves</th><th>Pass all 5 checks</th></tr>
+<tr><td>Keyword baseline (no AI)</td><td>[[KW_FOUND]] / 20</td><td>[[KW_TOP]] / 20</td><td>[[KW_CLEAN]]</td></tr>
+<tr>[[AI_ROW]]</tr>
+</table>
+<p><b>Where it picks badly:</b></p>
+<ul>
+[[FAILURES]]
+<li><b>Keyword method:</b> for Ep 1 it opens on Juliana calmly walking in and misses "Because he is marrying me". It also scores music cues ("cello swell") as cliffhangers, because the cue text contains words like "dramatic cliffhanger".</li>
+<li><b>Name drift in the scripts:</b> the hero is "Mysterious Bearded Man", "Scarred Bearded Man" and "Alexander"; "Blond Nobleman" is her father in Ep 2 but Rupert later; the estate has 5 spellings. The AI sees one episode at a time, so it can't always tell who is who.</li>
+<li><b>Standalone is judged by the AI only:</b> it is the softest score, and no code check backs it up.</li>
+</ul>
+
+<h2>6. Scale and cost</h2>
+<p>One call per episode, ~3k tokens in and ~0.5k out. A 50-episode show is ~50 calls, roughly <b>$0.10 on Gemini 2.5 Flash</b>, ~6 minutes on the free tier (rate limit; parallel calls on a paid key take under 1 minute). For every show Kuku makes: run it as a batch job when the scripts are final, send the shortlist to the editor, and feed back which promos performed (watch-through, installs) to tune the ranking weights. Next steps: cross-episode stitching, a second "critic" AI call that rejects weak picks, and checking against the real video.</p>
+
+<h2>7. AI tools I used, and one place they got it wrong</h2>
+<p>Claude (Claude Code) to plan and write the code and draft this doc; Gemini 2.5 Flash as the promo picker. [[AI_WRONG]] Claude's first version of the code was too complex for me to explain, with many files and extra scoring layers. I had it rewritten into one plain file with five steps.</p>
