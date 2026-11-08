@@ -131,8 +131,7 @@ def ask_ai(episode, api_key, base_url, model, count=2):
                            length=round(episode["length"]), script=script_text(episode), count=count)
     reply = requests.post(
         f"{base_url.rstrip('/')}/chat/completions",
-        headers={"Authorization": f"Bearer {api_key}", "x-api-key": api_key,
-                 "anthropic-version": "2023-06-01"},
+        headers={"Authorization": f"Bearer {api_key}"},
         json={"model": model, "temperature": 0.2,
               "messages": [{"role": "user", "content": prompt}]},
         timeout=120,

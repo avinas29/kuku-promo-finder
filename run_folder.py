@@ -21,6 +21,14 @@ episodes = [pf.parse_screenplay(f.read_text(encoding="utf-8"), f.name) for f in 
 episodes = sorted([e for e in episodes if e["lines"]], key=lambda e: e["number"])
 print(f"{len(episodes)} episodes, model: {model or 'keywords'}")
 
+# test the key on one episode first, so a bad key stops here instead of silently using keywords
+if key:
+    try:
+        pf.ask_ai(episodes[0], key, url, model)
+        print("API key works.")
+    except Exception as err:
+        sys.exit(f"The AI call failed: {err}\nCheck the key (copy it again) and the provider name.")
+
 # free tiers allow ~10 requests a minute, so wait a little between episodes
 slow = lambda n, total: (print(f"  episode {n}/{total}"), time.sleep(6 if key else 0))
 promos = pf.find_promos(episodes, key, url, model, 2, on_progress=slow)

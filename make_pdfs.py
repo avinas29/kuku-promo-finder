@@ -40,6 +40,8 @@ def to_pdf(html_text, pdf_name):
 
 kw = load("keywords")
 ai = load("gemini-2.5-flash")
+if ai and all(p["source"].startswith("keywords") for p in ai):
+    ai = None  # every AI call failed, so these are really keyword results
 main, label = (ai, "Gemini 2.5 Flash") if ai else (kw, "Keyword method (no AI)")
 kw_found, kw_top, kw_clean = score(kw)
 
