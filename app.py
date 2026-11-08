@@ -18,9 +18,17 @@ default_url, default_model = PROVIDERS.get(provider, ("", ""))
 if provider.startswith("No API"):
     api_key, base_url, model = "", "", ""
 else:
-    api_key = st.sidebar.text_input("API key", type="password")
+    api_key = st.sidebar.text_input("API key (Gemini: leave empty to use the demo key)", type="password")
     base_url = st.sidebar.text_input("Base URL", default_url)
     model = st.sidebar.text_input("Model", default_model)
+    # Demo key: stored in Streamlit's private Secrets box, never in the code
+    if not api_key and provider == "Gemini":
+        try:
+            api_key = st.secrets.get("GEMINI_API_KEY", "")
+        except Exception:  # no secrets set up (e.g. running on a laptop)
+            api_key = ""
+        if api_key:
+            st.sidebar.caption("Using the built-in demo key.")
 count = st.sidebar.slider("Promos per episode", 1, 3, 2)
 
 # ---- Input: upload files or paste one screenplay
