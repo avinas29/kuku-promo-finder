@@ -90,7 +90,7 @@ def script_text(episode, start=0, end=99999):
 # ---------------------------------------------------------------- 2. ASK AI
 
 PROVIDERS = {  # all of these speak the same "OpenAI-compatible" format, so swapping is easy
-    "Gemini": ("https://generativelanguage.googleapis.com/v1beta/openai", "gemini-2.5-flash"),
+    "Gemini": ("https://generativelanguage.googleapis.com/v1beta/openai", "gemini-3.1-flash-lite"),
     "Groq": ("https://api.groq.com/openai/v1", "llama-3.3-70b-versatile"),
     "OpenAI": ("https://api.openai.com/v1", "gpt-4o-mini"),
     "Claude": ("https://api.anthropic.com/v1", "claude-sonnet-4-5"),

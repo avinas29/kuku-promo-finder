@@ -2,7 +2,7 @@
 
   python3 make_pdfs.py            -> submission/Solution_Doc.pdf and submission/Results.pdf
 
-Uses outputs/gemini-2.5-flash/ if it exists, otherwise outputs/keywords/.
+Uses outputs/gemini-3.1-flash-lite/ if it exists, otherwise outputs/keywords/.
 """
 import html
 import json
@@ -39,10 +39,10 @@ def to_pdf(html_text, pdf_name):
 
 
 kw = load("keywords")
-ai = load("gemini-2.5-flash")
+ai = load("gemini-3.1-flash-lite")
 if ai and all(p["source"].startswith("keywords") for p in ai):
     ai = None  # every AI call failed, so these are really keyword results
-main, label = (ai, "Gemini 2.5 Flash") if ai else (kw, "Keyword method (no AI)")
+main, label = (ai, "Gemini 3.1 Flash-Lite") if ai else (kw, "Keyword method (no AI)")
 kw_found, kw_top, kw_clean = score(kw)
 
 # ---------------------------------------------------------------- solution doc
@@ -62,7 +62,7 @@ doc = doc.replace("[[AI_RESULTS]]", results)
 
 if ai:
     a_found, a_top, a_clean = score(ai)
-    row = f"<td>Gemini 2.5 Flash + code checks</td><td>{len(a_found)} / 20</td><td>{a_top} / 20</td><td>{a_clean} / {len(ai)}</td>"
+    row = f"<td>Gemini 3.1 Flash-Lite + code checks</td><td>{len(a_found)} / 20</td><td>{a_top} / 20</td><td>{a_clean} / {len(ai)}</td>"
     moved = [p for p in ai if abs(p["proposed_start"] - p["start"]) > 1 or abs(p["proposed_end"] - p["end"]) > 1]
     wrong = (f"Gemini proposed start/end times that were not real camera cuts in {len(moved)} of {len(ai)} promos "
              f"(off by more than 1 second), and {sum(1 for p in ai if not 20 <= p['proposed_end'] - p['proposed_start'] <= 60)} "

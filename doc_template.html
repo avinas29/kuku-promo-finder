@@ -56,7 +56,7 @@ code{font-size:8.4pt;background:#f3f3f0;padding:0 3px}
 </ul>
 
 <h2>6. Scale and cost</h2>
-<p>One call per episode, ~3k tokens in and ~0.5k out. A 50-episode show is ~50 calls, roughly <b>$0.10 on Gemini 2.5 Flash</b>, ~6 minutes on the free tier (rate limit; parallel calls on a paid key take under 1 minute). For every show Kuku makes: run it as a batch job when the scripts are final, send the shortlist to the editor, and feed back which promos performed (watch-through, installs) to tune the ranking weights. Next steps: cross-episode stitching, a second "critic" AI call that rejects weak picks, and checking against the real video.</p>
+<p>One call per episode, ~3k tokens in and ~0.5k out. A 50-episode show is ~50 calls, a few cents (<b>under $0.05 on Gemini 3.1 Flash-Lite</b>), ~6 minutes on the free tier (rate limit; parallel calls on a paid key take under 1 minute). For every show Kuku makes: run it as a batch job when the scripts are final, send the shortlist to the editor, and feed back which promos performed (watch-through, installs) to tune the ranking weights. Next steps: cross-episode stitching, a second "critic" AI call that rejects weak picks, and checking against the real video.</p>
 
 <h2>7. AI tools I used, and one place they got it wrong</h2>
-<p>Claude (Claude Code) to plan and write the code and draft this doc; Gemini 2.5 Flash as the promo picker. [[AI_WRONG]] Claude's first version of the code was too complex for me to explain, with many files and extra scoring layers. I had it rewritten into one plain file with five steps.</p>
+<p>Claude (Claude Code) to plan and write the code and draft this doc; Gemini 3.1 Flash-Lite as the promo picker. [[AI_WRONG]] Claude's first version of the code was too complex for me to explain, with many files and extra scoring layers. I had it rewritten into one plain file with five steps.</p>
