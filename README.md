@@ -1,5 +1,7 @@
 # Promo Finder (Kuku AI Generalist Assignment, Problem 1)
 
+**Live app:** https://avinas29-kuku-promo-finder-app-zmhns1.streamlit.app
+
 Reads microdrama screenplays and finds the best 20-60 second promos: where to start, where to end,
 the hook, the cliffhanger, why it works, and a ranking of which to post first.
 
